@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>С Днём Рождения, Асила!</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Courier New', Courier, monospace;
+      background-color: #000;
+      color: #0f0;
+    }
+    .page {
+      display: none;
+      padding: 20px;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+    .active {
+      display: block;
+      animation: fadeIn 1s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      z-index: 1000;
+    }
+    nav button {
+      background: none;
+      border: 2px solid #0f0;
+      color: #0f0;
+      padding: 5px 10px;
+      margin: 0 5px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+    nav button:hover {
+      background: #0f0;
+      color: #000;
+    }
+    #terminal {
+      background: rgba(0,0,0,0.85);
+      border: 2px solid #0f0;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      height: 70%;
+      margin: 60px auto 0;
+      overflow-y: auto;
+      box-shadow: 0 0 20px #0f0;
+    }
+    .line {
+      margin: 5px 0;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    #cursor {
+      display: inline-block;
+      width: 10px;
+      background-color: #0f0;
+      animation: blink 1s step-start infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+    #progressContainer {
+      width: 100%;
+      background-color: #222;
+      border: 1px solid #0f0;
+      margin: 10px 0;
+      height: 20px;
+    }
+    #progressBar {
+      height: 100%;
+      width: 0%;
+      background-color: #0f0;
+    }
+    .nav-btn {
+      margin-top: 20px;
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1em;
+    }
+    .timeline {
+      max-width: 800px;
+      margin: 80px auto;
+      padding: 20px;
+      border-left: 2px solid #0f0;
+    }
+    .timeline-event {
+      position: relative;
+      margin: 20px 0;
+      padding-left: 20px;
+    }
+    .timeline-event::before {
+      content: '';
+      position: absolute;
+      left: -9px;
+      top: 0;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background-color: #0f0;
+    }
+    #codeArea {
+      background: #212121;
+      color: #00ff00;
+      padding: 20px;
+      border-radius: 5px;
+      margin: 60px auto;
+      max-width: 800px;
+      height: 300px;
+      overflow-y: auto;
+      font-family: monospace;
+      font-size: 1em;
+    }
+    .balloons {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .balloon {
+      position: absolute;
+      bottom: -100px;
+      width: 40px;
+      height: 60px;
+      border-radius: 50%;
+      animation: floatUp 10s linear infinite;
+      left: calc(var(--i) * 12%);
+      animation-delay: calc(var(--i) * 1s);
+    }
+    .balloon:nth-child(1) { background: radial-gradient(circle at 50% 50%, #FF69B4, #FF1493); }
+    .balloon:nth-child(2) { background: radial-gradient(circle at 50% 50%, #87CEFA, #1E90FF); }
+    .balloon:nth-child(3) { background: radial-gradient(circle at 50% 50%, #90EE90, #32CD32); }
+    .balloon:nth-child(4) { background: radial-gradient(circle at 50% 50%, #FFD700, #FFA500); }
+    .balloon:nth-child(5) { background: radial-gradient(circle at 50% 50%, #FFA07A, #FF6347); }
+    .balloon:nth-child(6) { background: radial-gradient(circle at 50% 50%, #BA55D3, #9932CC); }
+    .balloon:nth-child(7) { background: radial-gradient(circle at 50% 50%, #40E0D0, #20B2AA); }
+    .balloon:nth-child(8) { background: radial-gradient(circle at 50% 50%, #F08080, #CD5C5C); }
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-120vh); opacity: 0; }
+    }
+    .stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -2;
+      overflow: hidden;
+    }
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0;
+      animation: twinkle 3s infinite;
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="stars"></div>
+  <div class="balloons">
+    <div class="balloon" style="--i:0;"></div>
+    <div class="balloon" style="--i:1;"></div>
+    <div class="balloon" style="--i:2;"></div>
+    <div class="balloon" style="--i:3;"></div>
+    <div class="balloon" style="--i:4;"></div>
+    <div class="balloon" style="--i:5;"></div>
+    <div class="balloon" style="--i:6;"></div>
+    <div class="balloon" style="--i:7;"></div>
+  </div>
+  <nav>
+    <button onclick="showPage('page1')">Терминал</button>
+    <button onclick="showPage('page2')">Наша История</button>
+    <button onclick="showPage('page3')">Код Дружбы</button>
+  </nav>
+  
+  <div id="page1" class="page active">
+    <div id="terminal">
+      <div id="output"></div>
+      <div id="cursor"></div>
+    </div>
+  </div>
+  
+  <div id="page2" class="page">
+    <h1 class="animate__animated animate__fadeInDown" style="text-align:center;">Наша История</h1>
+    <div class="timeline">
+      <div class="timeline-event animate__animated animate__fadeInLeft">
+        <strong>Встреча в детстве</strong>
+        <p>Мы впервые познакомились больше 10 лет назад, обалдеть! Тогда, честно говоря, я бы никогда не подумал, что буду дружить с девушкой 😅.</p>
+      </div>
+      <div class="timeline-event animate__animated animate__fadeInLeft">
+        <strong>11 класс: время перемен</strong>
+        <p>В 11‑м классе мы начали настоящую дружбу. Ты ещё не знала программирование, но даже так мы могли разговаривать обо всём на свете, и я верю, что не только мне было очень весело и познавательно в то время.</p>
+      </div>
+      <div class="timeline-event animate__animated animate__fadeInLeft">
+        <strong>Сейчас: 20 лет</strong>
+        <p>Сегодня нам по 20, и я надеюсь, что наша дружба сохранилась и сохранится, несмотря на странности, если можно так сказать. С днём рождения, Асила! Теперь мы оба по‑настоящему взрослые, eeeeeee!!!!</p>
+      </div>
+    </div>
+    <div style="text-align: center;">
+      <button class="nav-btn" onclick="showPage('page1')">Вернуться в Терминал</button>
+    </div>
+  </div>
+  
+  <div id="page3" class="page">
+    <h1 class="animate__animated animate__fadeInDown" style="text-align:center;">Код Дружбы</h1>
+    <div id="codeArea" class="animate__animated animate__fadeInUp">
+<pre>
+/* Секретный код дружбы */
+function celebrateFriendship() {
+    let love = Infinity;
+    let smiles = [];
+    for(let i = 0; i < 100; i++) {
+        smiles.push("😊");
+    }
+    return { love, smiles };
+}
+console.log("С Днём Рождения, Асила!");
+</pre>
+    </div>
+    <div style="text-align: center;">
+      <button class="nav-btn" onclick="showPage('page1')">Вернуться в Терминал</button>
+    </div>
+  </div>
+  
+  <audio id="bgMusic" autoplay loop style="display:none">
+    <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_8ec1812389.mp3?filename=happy-birthday-1-10214.mp3" type="audio/mp3">
+  </audio>
+  
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+  <script>
+    function showPage(pageId) {
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+      document.getElementById(pageId).classList.add('active');
+      if(pageId === 'page1') {
+        resetTerminal();
+        typeLine();
+      }
+    }
+    
+    const output = document.getElementById('output');
+    const cursor = document.getElementById('cursor');
+    const lines = [
+      "Initializing Birthday Terminal...",
+      "Loading modules: [friends, memories, code]",
+      "Compiling birthday project for Асила...",
+      "",
+      "/* Вспомним: */",
+      "/* Кажется, что ещё вчера мы просто болтали обо всём подряд, смеялись и веселились, */",
+      "/* а сегодня нам уже по 20 лет! ⌛ Время летит как high-speed internet, */",
+      "/* помню, как мы впервые встретились в детстве, а потом, когда учились в 11‑м классе, стали настоящими друзьями. */",
+      "",
+      "function life() {",
+      "    if (life.bugs) { fix(life.bugs); }",
+      "    while (happiness < unlimited) { keepSmiling(); }",
+      "}",
+      "",
+      "console.log('С Днём Рождения, Асила!');",
+      "",
+      "/* Желаю, чтобы каждый твой день был лучше предыдущего,",
+      "   и чтобы никогда не было грусти. */",
+      "",
+      "/* Я правда очень сильно восхищаюсь тем, как много у тебя талантов.",
+      "   Ты будто умеешь и интересуешься всем.",
+      "   Пусть у тебя всегда будет так много интересных занятий, и ты во всем преуспеешь.",
+      "",
+      "// Ты невероятная, Асила! 🎂"
+    ];
+    
+    let currentLine = 0;
+    let currentChar = 0;
+    
+    function resetTerminal() {
+      output.innerHTML = "";
+      cursor.style.display = 'inline-block';
+      currentLine = 0;
+      currentChar = 0;
+    }
+    
+    function typeLine() {
+      if (currentLine >= lines.length) {
+        cursor.style.display = 'none';
+        setTimeout(() => {
+          confetti({
+            particleCount: 200,
+            spread: 100,
+            origin: { y: 0.7 }
+          });
+          addContinueButton();
+        }, 500);
+        return;
+      }
+      
+      const lineElem = document.createElement('div');
+      lineElem.className = 'line';
+      output.appendChild(lineElem);
+      let lineText = lines[currentLine];
+      currentChar = 0;
+      
+      if (lineText.startsWith("Compiling birthday project")) {
+        const progressContainer = document.createElement('div');
+        progressContainer.id = 'progressContainer';
+        lineElem.appendChild(progressContainer);
+        const progressBar = document.createElement('div');
+        progressBar.id = 'progressBar';
+        progressContainer.appendChild(progressBar);
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.random() * 5;
+          if (progress >= 100) {
+            progress = 100;
+            progressBar.style.width = progress + '%';
+            clearInterval(interval);
+            setTimeout(() => {
+              currentLine++;
+              typeLine();
+            }, 800);
+          } else {
+            progressBar.style.width = progress + '%';
+          }
+        }, 100);
+      } else {
+        const interval = setInterval(() => {
+          if (currentChar < lineText.length) {
+            lineElem.textContent += lineText[currentChar];
+            currentChar++;
+          } else {
+            clearInterval(interval);
+            currentLine++;
+            setTimeout(typeLine, 400);
+          }
+          document.getElementById('terminal').scrollTop = document.getElementById('terminal').scrollHeight;
+        }, 40);
+      }
+    }
+    
+    function addContinueButton() {
+      const continueBtn = document.createElement('button');
+      continueBtn.className = 'nav-btn';
+      continueBtn.textContent = 'Перейти к "Наша История"';
+      output.appendChild(document.createElement('br'));
+      output.appendChild(continueBtn);
+      continueBtn.addEventListener('click', () => {
+        showPage('page2');
+      });
+    }
+    
+    function generateStars() {
+      const starsContainer = document.querySelector('.stars');
+      const numStars = 50;
+      for (let i = 0; i < numStars; i++) {
+        const star = document.createElement('div');
+        star.classList.add('star');
+        star.style.left = Math.random() * 100 + '%';
+        star.style.top = Math.random() * 100 + '%';
+        star.style.animationDelay = Math.random() * 5 + 's';
+        star.style.animationDuration = (2 + Math.random() * 3) + 's';
+        starsContainer.appendChild(star);
+      }
+    }
+    
+    window.onload = function() {
+      if(document.getElementById('page1').classList.contains('active')) {
+        typeLine();
+      }
+    };
+    
+    window.addEventListener("load", generateStars);
+  </script>
+</body>
+</html>
